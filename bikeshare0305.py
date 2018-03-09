@@ -9,17 +9,19 @@ def get_city():
     """Asks the user to select a city from a list of options.
     If city is incorrect, restarts loop.
     """
-    while True:
-        city_input = (input("Let's look at some bike share data! \nSelect Chicago, New York, or Washington: \n"))
-        city_file = ''
-        if city_input.lower() in ['chicago', 'washington']:
-            city_file = city_input + ".csv"
-        elif city_input.lower() in ['new york']:
-            city_file = 'new_york_city.csv'
-        else:
-            print('Wrong city, try again.')
-            get_city()
-        return city_file
+    city_input = (input("Let's look at some bike share data! \nSelect Chicago, New York, or Washington: \n"))
+    if city_input.lower in ['Chicago', 'Washington']:
+        k = city_input.lower() + '.csv'
+        df = pd.read_csv(k)
+        return k
+    elif city_input.lower() in ['new york']:
+        k = 'new_york_city.csv'
+        df = pd.read_csv(k)
+        return k
+    elif city_input.lower() not in ['chicago', 'washington', 'new york']:
+        print('Wrong city, try again.')
+        get_city()
+
 
 def get_time_period():
     '''Asks the user for a time period and returns the specified filter.
@@ -56,12 +58,17 @@ def get_month():
         Returns index of month in Pandas DatetimeIndex 1=January, 2=February, etc.
     '''
 
-    month = (input('\nWhich month? Select January, February, March, April, May, or June.\n'))
-    if month.lower() in ['january', 'february', 'march', 'april', 'may', 'june']:
-        return month
-    else:
-        print('Please select a valid month.')
-    get_month()
+    while True:
+        try:
+            month = int(input('\nWhich month? Select 1: January, 2: February, 3: March, 4: April, 5: May, 6: June\n'))
+        except ValueError:
+            print("Enter a month between 1 and 6.")
+        else:
+            if 1 <= month < 7:
+                break
+            else:
+                print("Enter a month between 1 and 6.")
+    return month
 
     # TODO: handle raw input and complete function
 
