@@ -79,7 +79,7 @@ def get_day():
     Args:
         none.
     Returns:
-        TODO: fill out return type and description (see get_city for an example)
+        Returns day and month in 2017.
     '''
     input_date = input("Choose a day and month between 01/01/2017 and 06/01/2017 in the format of DD/MM/YY\n")
     day = pd.to_datetime(input_date)
@@ -87,8 +87,11 @@ def get_day():
 
 
 def popular_month(k):
-    '''TODO: fill out docstring with description, arguments, and return values.
-    Question: What is the most popular month for start time?
+    '''
+    Args:
+        k=city_file
+    Returns:
+        Popular month without a time filter.
     '''
     for row in k:
         df = pd.read_csv(k)
@@ -122,8 +125,12 @@ def popular_month(k):
 def popular_day(k):
     '''TODO: fill out docstring with description, arguments, and return values.
     Question: What is the most popular day of week (Monday, Tuesday, etc.) for start time?
+        Args:
+        k=city_file
+    Returns:
+        Returns popular day without time period.
     '''
-    # TODO: complete function
+
     for row in k:
         df = pd.read_csv(k)
         df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
@@ -134,13 +141,14 @@ def popular_day(k):
         print('Most Popular Day of Week: ' + popular)
         break
 
-
-
 def popular_hour(k):
     '''TODO: fill out docstring with description, arguments, and return values.
     Question: What is the most popular hour of day for start time?
+    Args:
+        k=city_file
+    Returns:
+        Popular month without time period.
     '''
-    # TODO: complete function
     for row in k:
         df = pd.read_csv(k)
         df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
@@ -153,10 +161,14 @@ def popular_hour(k):
 
 
 def trip_duration(k, time_period):
-    '''TODO: fill out docstring with description, arguments, and return values.
-    Question: What is the total trip duration and average trip duration?
     '''
-    # TODO: complete function
+    Question: What is the total trip duration and average trip duration?
+    Args:
+        k=city_file, time_period
+    Returns:
+        Returns trip duration using user selected city and time period.
+    '''
+
     df = pd.read_csv(k)
     df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
                        'Start Station': 'Start_Station', 'End Station': 'End_Station',
@@ -164,14 +176,14 @@ def trip_duration(k, time_period):
     df['Start'] = pd.to_datetime(df['Start'], errors='coerce')
     if time_period == 'day':
         df['day'] = df['Start'].dt.weekday_name
-        df.loc[df.day == 'day']['Duration'].max()
+        df.loc[df.day == + day]['Duration'].max() #how would I add the day argument into this. example: If day = 01/01/17 ?
         duration_max = (df.Duration.max())/60
         duration_avg = (df.Duration.mean())/60
         print('Maximum Trip Duration: ' + str(duration_max) + ' minutes')
         print('Minimum Trip Duration: ' + str(duration_avg) + ' minutes')
         return duration_max, duration_avg
     elif time_period == 'month':
-        df['month'] = df['Start'].dt.weekday_name
+        df['month'] = df['Start'].dt.to_period('M')
         df.loc[df.month == 'month']['Duration'].max()
         duration_max = (df.Duration.max())/60
         duration_avg = (df.Duration.mean())/60
@@ -179,7 +191,7 @@ def trip_duration(k, time_period):
         print('Minimum Trip Duration: ' + str(duration_avg) + ' minutes')
         return duration_max, duration_avg
     elif time_period == 'None':
-        for row in k:
+        for row in k: # do I need this portion? Since there is no loop.
             duration_max = (df.Duration.max())/60
             duration_avg = (df.Duration.mean())/60
             print('Maximum Trip Duration: ' + str(duration_max) + ' minutes')
@@ -189,8 +201,11 @@ def trip_duration(k, time_period):
 def popular_stations(k, time_period):
     '''TODO: fill out docstring with description, arguments, and return values.
     Question: What is the most popular start station and most popular end station?
+    Args:
+        k=city_file, time_period
+    Returns:
+        Returns popular stations using user selected city file and time period.
     '''
-    # TODO: complete function
 
     df = pd.read_csv(k)
     df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
