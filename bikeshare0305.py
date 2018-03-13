@@ -114,15 +114,13 @@ def popular_day(k):
         Returns popular day without time period.
     '''
 
-    for row in k:
-        df = pd.read_csv(k)
-        df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
+    df = pd.read_csv(k)
+    df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
                            'Start Station': 'Start_Station', 'End Station': 'End_Station',
                            'User Type': 'User_Type', 'Birth Year': 'Birth_Year'}, inplace=True)
-        df['Start'] = pd.to_datetime(df.Start)
-        popular = str(df.Start.dt.weekday_name.mode())
-        print('Most Popular Day of Week: ' + popular)
-        break
+    df['Start'] = pd.to_datetime(df.Start)
+    popular = str(df.Start.dt.weekday_name.mode())
+    print('Most Popular Day of Week: ' + popular)
 
 def popular_hour(k):
     '''TODO: fill out docstring with description, arguments, and return values.
@@ -132,15 +130,13 @@ def popular_hour(k):
     Returns:
         Popular month without time period.
     '''
-    for row in k:
-        df = pd.read_csv(k)
-        df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
+    df = pd.read_csv(k)
+    df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
                            'Start Station': 'Start_Station', 'End Station': 'End_Station',
                            'User Type': 'User_Type', 'Birth Year': 'Birth_Year'}, inplace=True)
-        df['Start'] = pd.to_datetime(df.Start)
-        popular = str(df.Start.dt.hour.mode())
-        print('Popular Start Hour: ' + popular)
-        break
+    df['Start'] = pd.to_datetime(df.Start)
+    popular = str(df.Start.dt.hour.mode())
+    print('Popular Start Hour: ' + popular)
 
 
 def trip_duration(k, time_period):
@@ -174,12 +170,11 @@ def trip_duration(k, time_period):
         print('Minimum Trip Duration: ' + str(duration_avg) + ' minutes')
         return duration_max, duration_avg
     elif time_period == 'None':
-        for row in k: # do I need this portion? Since there is no loop.
-            duration_max = (df.Duration.max())/60
-            duration_avg = (df.Duration.mean())/60
-            print('Maximum Trip Duration: ' + str(duration_max) + ' minutes')
-            print('Minimum Trip Duration: ' + str(duration_avg) + ' minutes')
-            return duration_max, duration_avg
+        duration_max = (df.Duration.max())/60
+        duration_avg = (df.Duration.mean())/60
+        print('Maximum Trip Duration: ' + str(duration_max) + ' minutes')
+        print('Minimum Trip Duration: ' + str(duration_avg) + ' minutes')
+        return duration_max, duration_avg
 
 def popular_stations(k, time_period):
     '''TODO: fill out docstring with description, arguments, and return values.
@@ -195,12 +190,11 @@ def popular_stations(k, time_period):
                        'Start Station': 'Start_Station', 'End Station': 'End_Station',
                        'User Type': 'User_Type', 'Birth Year': 'Birth_Year'}, inplace=True)
     if time_period == 'None':
-        for row in k:
-            popular_start = (df.Start_Station.mode())
-            popular_end = (df.End_Station.mode())
-            print('Popular Start Station: ' + popular_start)
-            print('Popular End Station: ' + popular_end)
-            return popular_start, popular_end
+        popular_start = (df.Start_Station.mode())
+        popular_end = (df.End_Station.mode())
+        print('Popular Start Station: ' + popular_start)
+        print('Popular End Station: ' + popular_end)
+        return popular_start, popular_end
 
 
 def popular_trip(k, time_period):
@@ -216,14 +210,12 @@ def users(k, time_period):
     '''
     # TODO: complete function
     if time_period == 'None':
-        for row in k:
-            df = pd.read_csv(k)
-            df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
+        df = pd.read_csv(k)
+        df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
                            'Start Station': 'Start_Station', 'End Station': 'End_Station',
                            'User Type': 'User_Type', 'Birth Year': 'Birth_Year'}, inplace=True)
-            print("User Type Counts: \n")
-            print(pd.value_counts(df['User_Type']))
-            break
+        print("User Type Counts: \n")
+        print(pd.value_counts(df['User_Type']))
 
 
 def gender(k, time_period):
@@ -233,11 +225,9 @@ def gender(k, time_period):
     '''
     # TODO: complete function
     df = pd.read_csv(k)
-    if time_period == 'None':
-        for row in k:
-            print("Gender Breakdown: \n")
-            print(pd.value_counts(df['Gender']))
-            break
+    if time_period == 'none':
+        print("Gender Breakdown: \n")
+        print(pd.value_counts(df['Gender']))
 
 
 def birth_years(k, time_period):
@@ -250,15 +240,14 @@ def birth_years(k, time_period):
     df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
                        'Start Station': 'Start_Station', 'End Station': 'End_Station',
                        'User Type': 'User_Type', 'Birth Year': 'Birth_Year'}, inplace=True)
-    if time_period == 'None':
-        for row in k:
-            oldest_user = int(datetime.now().year - (df.Birth_Year.min()))
-            youngest_user = int(datetime.now().year - (df.Birth_Year.max()))
-            popular_birth = int(datetime.now().year - (df.Birth_Year.mode()))
-            print('Oldest User: ' + str(oldest_user))
-            print('Youngest User: ' + str(youngest_user))
-            print('Frequent User Age: ' + str(popular_birth))
-            return oldest_user, youngest_user, popular_birth
+    if time_period == 'none':
+        oldest_user = int(datetime.now().year - (df.Birth_Year.min()))
+        youngest_user = int(datetime.now().year - (df.Birth_Year.max()))
+        popular_birth = int(datetime.now().year - (df.Birth_Year.mode()))
+        print('Oldest User: ' + str(oldest_user))
+        print('Youngest User: ' + str(youngest_user))
+        print('Frequent User Age: ' + str(popular_birth))
+        return oldest_user, youngest_user, popular_birth
 
 
 def statistics():
