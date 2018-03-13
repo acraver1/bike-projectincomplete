@@ -93,31 +93,14 @@ def popular_month(k):
     Returns:
         Popular month without a time filter.
     '''
-    for row in k:
-        df = pd.read_csv(k)
-        df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
+
+    df = pd.read_csv(k)
+    df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
                            'Start Station': 'Start_Station', 'End Station': 'End_Station',
                            'User Type': 'User_Type', 'Birth Year': 'Birth_Year'}, inplace=True)
-        df['Start'] = pd.to_datetime(df.Start)
-        popular = str(df.Start.dt.month.mode())
-        if popular == '1':
-            print('Popular Month: January')
-            break
-        elif popular == '2':
-            print('Popular Month: February')
-            break
-        elif popular == '3':
-            print('Popular Month: March')
-            break
-        elif popular == '4':
-            print('Popular Month: April')
-            break
-        elif popular == '5':
-            print('Popular Month: May')
-            break
-        elif popular == '6':
-            print('Popular Month: June')
-            break
+    df['Start'] = pd.to_datetime(df.Start)
+    popular = str(df.Start.dt.month.mode())
+    print("Popular month: " + popular)
 
     # TODO: complete function
 
