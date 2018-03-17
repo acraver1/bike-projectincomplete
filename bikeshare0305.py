@@ -12,11 +12,9 @@ def get_city():
     city_input = (input("Let's look at some bike share data! \nSelect Chicago, New York, or Washington: \n"))
     if city_input.lower in ['Chicago', 'Washington']:
         k = city_input.lower() + '.csv'
-        df = pd.read_csv(k)
         return k
     elif city_input.lower() in ['new york']:
         k = 'new_york_city.csv'
-        df = pd.read_csv(k)
         return k
     elif city_input.lower() not in ['chicago', 'washington', 'new york']:
         print('Wrong city, try again.')
@@ -122,8 +120,9 @@ def popular_day(k):
     popular = str(df.Start.dt.weekday_name.mode())
     print('Most Popular Day of Week: ' + popular)
 
+
 def popular_hour(k):
-    '''TODO: fill out docstring with description, arguments, and return values.
+    '''
     Question: What is the most popular hour of day for start time?
     Args:
         k=city_file
@@ -154,27 +153,28 @@ def trip_duration(k, time_period):
                        'User Type': 'User_Type', 'Birth Year': 'Birth_Year'}, inplace=True)
     df['Start'] = pd.to_datetime(df['Start'], errors='coerce')
     if time_period == 'day':
-        df['day'] = df['Start'].dt.weekday_name
-        df.loc[df.day == + day]['Duration'].max() #how would I add the day argument into this. example: If day = 01/01/17 ?
-        duration_max = (df.Duration.max())/60
-        duration_avg = (df.Duration.mean())/60
-        print('Maximum Trip Duration: ' + str(duration_max) + ' minutes')
-        print('Minimum Trip Duration: ' + str(duration_avg) + ' minutes')
-        return duration_max, duration_avg
+        day_dt = datetime.datetime.strptime(day, "%Y-%m-%d")
+        df['day'] = pd.to_datetime(df['Start'].dt.date)
+        duration = df.loc[df.day == day_dt, :]
+        duration_max = duration.Duration.max() / 60
+        duration_mean = duration.Duration.mean() / 60
+        print("Max Trip Duration: " + str(duration_max) + " minutes.")
+        print("Average Trip Duration: " + str(duration_mean) + " minutes.")
     elif time_period == 'month':
-        df['month'] = df['Start'].dt.to_period('M')
-        df.loc[df.month == 'month']['Duration'].max()
+        month_dt = pd.to_datetime(month)
+        df['month'] = pd.to_datetime(df['Start'].dt.month)
+        duration = df.loc[df.month == month_dt, :]
+        duration_max = duration.Duration.max() / 60
+        duration_mean = duration.Duration.mean() / 60
+        print("Maximum Trip Duration: " + str(duration_max) + " minutes.")
+        print('Minimum Trip Duration: ' + str(duration_mean) + " minutes.")
+    elif time_period == 'none':
         duration_max = (df.Duration.max())/60
-        duration_avg = (df.Duration.mean())/60
-        print('Maximum Trip Duration: ' + str(duration_max) + ' minutes')
-        print('Minimum Trip Duration: ' + str(duration_avg) + ' minutes')
-        return duration_max, duration_avg
-    elif time_period == 'None':
-        duration_max = (df.Duration.max())/60
-        duration_avg = (df.Duration.mean())/60
-        print('Maximum Trip Duration: ' + str(duration_max) + ' minutes')
-        print('Minimum Trip Duration: ' + str(duration_avg) + ' minutes')
-        return duration_max, duration_avg
+        duration_mean = (df.Duration.mean())/60
+        print("Maximum Trip Duration: " + str(duration_max) + " minutes.")
+        print('Minimum Trip Duration: ' + str(duration_mean) + " minutes.")
+    else:
+        get_city()
 
 def popular_stations(k, time_period):
     '''TODO: fill out docstring with description, arguments, and return values.
@@ -189,6 +189,23 @@ def popular_stations(k, time_period):
     df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
                        'Start Station': 'Start_Station', 'End Station': 'End_Station',
                        'User Type': 'User_Type', 'Birth Year': 'Birth_Year'}, inplace=True)
+    df['Start'] = pd.to_datetime(df['Start'], errors='coerce')
+    if time_period == 'day':
+        day_dt = datetime.datetime.strptime(day, "%Y-%m-%d")
+        df['day'] = pd.to_datetime(df['Start'].dt.date)
+        popular = df.loc[df.day == day_dt, :]
+        popular_start = popular.Start_Station.mode()
+        popular_end = popular.End_Station.mode()
+        print('Popular Start Station: ' + popular_start)
+        print('Popular End Station: ' + popular_end)
+    elif time_period == 'month':
+        month_dt = pd.to_datetime(month)
+        df['month'] = pd.to_datetime(df['Start'].dt.month)
+        popular = df.loc[df.month == month_dt, :]
+        popular_start = popular.Start_Station.mode()
+        popular_end = popular.End_Station.mode()
+        print('Popular Start Station: ' + popular_start)
+        print('Popular End Station: ' + popular_end)
     if time_period == 'None':
         popular_start = (df.Start_Station.mode())
         popular_end = (df.End_Station.mode())
@@ -225,6 +242,18 @@ def gender(k, time_period):
     '''
     # TODO: complete function
     df = pd.read_csv(k)
+    df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
+                       'Start Station': 'Start_Station', 'End Station': 'End_Station',
+                       'User Type': 'User_Type', 'Birth Year': 'Birth_Year'}, inplace=True)
+    df['Start'] = pd.to_datetime(df['Start'], errors='coerce')
+    if time_period == 'day':
+        day_dt = datetime.datetime.strptime(day, "%Y-%m-%d")
+        df['day'] = pd.to_datetime(df['Start'].dt.date)
+        popular = df[df.loc[df.day == day_dt, :] & (pd.value_counts(df['Gender']))]
+        popular_start = popular.Start_Station.mode()
+        popular_end = popular.End_Station.mode()
+        print('Popular Start Station: ' + popular_start)
+        print('Popular End Station: ' + popular_end)
     if time_period == 'none':
         print("Gender Breakdown: \n")
         print(pd.value_counts(df['Gender']))
@@ -259,91 +288,55 @@ def statistics():
         none.
     '''
 
-    # Filter by city (Chicago, New York, Washington) and load the file
+    # Returns city file as k
     k = get_city()
 
     # Filter by time period (month, day, none)
     time_period = get_time_period()
-    if time_period == 'month':
+
+    # Creates time_period variable as none, month, or day
+    if time_period == "none":
+        time_period = "none"
+
+    if time_period == "month":
         month = get_month()
-    elif time_period == 'day':
+
+    if time_period == "day":
         day = get_day()
-    print('Calculating the first statistic...')
 
-    # What is the most popular month for start time?
+    # Popular month without time period
     if time_period == 'none':
-        start_time = time.time()
-
         popular_month(k)
 
-        print("That took %s seconds.\n" % (time.time() - start_time))
-        print("Calculating the next statistic...")
-
-    # What is the most popular day of week (Monday, Tuesday, etc.) for start time?
-    if time_period == 'none' or time_period == 'month':
-        start_time = time.time()
-
+    # Popular day without time period
+    if time_period == 'none':
         popular_day(k)
 
-        print("That took %s seconds.\n" % (time.time() - start_time))
-        print("Calculating the next statistic...")
-    start_time = time.time()
+    # Popular hour without time period
+    if time_period == 'none':
+        popular_hour(k)
 
-    # What is the most popular hour of day for start time?
-    popular_hour(k)
-
-    print("That took %s seconds.\n" % (time.time() - start_time))
-    print("Calculating the next statistic...")
-    start_time = time.time()
-
-    # What is the total trip duration and average trip duration?
+    # Trip duration
     trip_duration(k, time_period)
 
-    print("That took %s seconds.\n" % (time.time() - start_time))
-    print("Calculating the next statistic...")
-    start_time = time.time()
-
-    # What is the most popular start station and most popular end station?
+    # Popular start and end stations
     popular_stations(k, time_period)
 
-    print("That took %s seconds.\n" % (time.time() - start_time))
-    print("Calculating the next statistic...")
-    start_time = time.time()
+    # User type count
+    users(k, time_period)
 
-    # What is the most popular trip?
-    popular_trip(k, time_period)
 
-    print("That took %s seconds.\n" % (time.time() - start_time))
-    print("Calculating the next statistic...")
-    start_time = time.time()
-
-    # What are the counts of each user type?
-    users(time_period, k)
-
-    print("That took %s seconds.\n" % (time.time() - start_time))
-
-    if k != 'washington.csv':
-        print("Calculating the next statistic...")
-        start_time = time.time()
-
-        # What are the counts of gender?
+    # Gender count for Chicago and NYC file
+    if k != "washington.csv":
         gender(k, time_period)
 
-        print("That took %s seconds.\n" % (time.time() - start_time))
-        print("Calculating the next statistic...")
-        start_time = time.time()
-
-        # What are the earliest (i.e. oldest user), most recent (i.e. youngest user), and
-        # most popular birth years?
+    # Birth year information for Chicago and NYC file
+    if k != "washington.csv":
         birth_years(k, time_period)
 
-        print("That took %s seconds.\n" % (time.time() - start_time))
-
-    # Display five lines of data at a time if user specifies that they would like t
-
-    # Restart?
-    restart = input('\nWould you like to restart? Type \'Y\' or \'N\'.\n')
-    if restart == 'Y':
+    #Restart?
+    restart = input('\n Would you like to restart? Type \'yes\' or \'no\'.')
+    if restart.lower() == 'yes':
         statistics()
 
 
