@@ -226,13 +226,30 @@ def users(k, time_period):
     Question: What are the counts of each user type?
     '''
     # TODO: complete function
-    if time_period == 'None':
-        df = pd.read_csv(k)
-        df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
-                           'Start Station': 'Start_Station', 'End Station': 'End_Station',
-                           'User Type': 'User_Type', 'Birth Year': 'Birth_Year'}, inplace=True)
-        print("User Type Counts: \n")
+    df = pd.read_csv(k)
+    df.rename(columns={'Start Time': 'Start', 'End Time': 'End', 'Trip Duration': 'Duration',
+                       'Start Station': 'Start_Station', 'End Station': 'End_Station',
+                       'User Type': 'User_Type', 'Birth Year': 'Birth_Year'}, inplace=True)
+    df['Start'] = pd.to_datetime(df['Start'], errors='coerce')
+    if time_period == 'day':
+        day_dt = datetime.datetime.strptime(day, "%Y-%m-%d")
+        df['day'] = pd.to_datetime(df['Start'].dt.date)
+        day_period = df.loc[df.day == day_dt, :]
+        user_count = pd.value_counts(day_period['User_Type'])
+        print("User Types: \n")
+        print(user_count)
+    elif time_period == 'month':
+        month_dt = pd.to_datetime(month)
+        df['month'] = pd.to_datetime(df['Start'].dt.month)
+        month_period = df.loc[df.month == month_dt, :]
+        user_count = pd.value_counts(month_period['User_Type'])
+        print("User Types: \n")
+        print(user_count)
+    elif time_period == 'none':
+        print("User Types: \n")
         print(pd.value_counts(df['User_Type']))
+    else:
+        users(k, time_period)
 
 
 def gender(k, time_period):
@@ -249,14 +266,22 @@ def gender(k, time_period):
     if time_period == 'day':
         day_dt = datetime.datetime.strptime(day, "%Y-%m-%d")
         df['day'] = pd.to_datetime(df['Start'].dt.date)
-        popular = df[df.loc[df.day == day_dt, :] & (pd.value_counts(df['Gender']))]
-        popular_start = popular.Start_Station.mode()
-        popular_end = popular.End_Station.mode()
-        print('Popular Start Station: ' + popular_start)
-        print('Popular End Station: ' + popular_end)
-    if time_period == 'none':
+        day_period = df.loc[df.day == day_dt, :]
+        gender_count = pd.value_counts(day_period['Gender'])
+        print("Gender Breakdown: \n")
+        print(gender_count)
+    elif time_period == 'month':
+        month_dt = pd.to_datetime(month)
+        df['month'] = pd.to_datetime(df['Start'].dt.month)
+        month_period = df.loc[df.month == month_dt, :]
+        gender_count = pd.value_counts(month_period['Gender'])
+        print("Gender Breakdown: \n")
+        print(gender_count)
+    elif time_period == 'none':
         print("Gender Breakdown: \n")
         print(pd.value_counts(df['Gender']))
+    else:
+        gender(k, time_period)
 
 
 def birth_years(k, time_period):
